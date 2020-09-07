@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
+import { connect } from "react-redux";
+import { compose } from "redux";
 
 import Divider from "@material-ui/core/Divider";
 import List from "@material-ui/core/List";
@@ -34,8 +36,6 @@ import Radio from "@material-ui/core/Radio/Radio";
 import moment from "moment";
 import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
-
-const drawerWidth = 240;
 
 const styles = (theme) => ({
   root: {
@@ -80,6 +80,8 @@ class ReportList extends Component {
     super(props);
     this.state = {
       template_type: "daily_summary",
+      reportDate: moment().format("YYYY-MM-DD"),
+      center: "ec-hq",
       start_date: moment()
         .subtract(1, "d")
         .format("YYYY-MM-DDT16:00"),
@@ -88,7 +90,6 @@ class ReportList extends Component {
       complain: true,
       inquiry: true,
       reportId: 0,
-      reportDate: moment().format("YYYY-MM-DD"),
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -117,7 +118,9 @@ class ReportList extends Component {
         `/app/reports/view?template_type=` +
           this.state.template_type +
           "&report_date=" +
-          this.state.reportDate
+          this.state.reportDate +
+          "&center=" +
+          this.state.center
         // this.props.history.push(`/app/reports/view?template_type=` + this.state.template_type +
         // "&start_date=" + this.state.start_date +
         // "&end_date=" + this.state.end_date +
@@ -133,7 +136,7 @@ class ReportList extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, divisions } = this.props;
     return (
       <Paper className={classes.root} style={{ padding: 20 }}>
         <Grid container spacing={24}>
@@ -260,6 +263,29 @@ class ReportList extends Component {
                     }
                   />
                 </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    id="center"
+                    select
+                    label="Center"
+                    className={classes.textField}
+                    value={this.state.center}
+                    onChange={(e) => this.handleChange("center", e.target.value)}
+                    SelectProps={{
+                      MenuProps: {
+                        className: classes.menu,
+                      },
+                    }}
+                    margin="normal"
+                  >
+                    {divisions.allIds.map((option, key) => (
+                      (divisions.idsByOrganization['eclk'].includes(option)) && (
+                        <MenuItem key={key} value={option}>
+                          {divisions.byIds[option].name}
+                        </MenuItem>)
+                    ))}
+                  </TextField>
+                </Grid>
                 {/* <Grid item xs={12}>
                   <TextField
                     margin="normal"
@@ -309,4 +335,18 @@ class ReportList extends Component {
   }
 }
 
-export default withRouter(withStyles(styles, { withTheme: true })(ReportList));
+const mapStateToProps = (state, ownProps) => {
+  return {
+    divisions: state.user.divisions,
+    ...ownProps
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default withRouter(compose(
+  withStyles(styles, { withTheme: true }),
+  connect(mapStateToProps, mapDispatchToProps))
+  (ReportList));
