@@ -31,7 +31,8 @@ const ReportViewer = ({ classes, ...props }) => {
     useEffect(() => {
         const values = queryString.parse(props.location.search);
         loadPDF(API_BASE_URL + "/reports/?template_type=" + values.template_type + 
-            "&report_date=" + values.report_date
+            "&report_date=" + values.report_date +
+            "&centre=" + values.centre
             // "&start_date=" + values.start_date +
             // "&end_date=" + values.end_date +
             // "&detailed_report=" + values.detailed_report +

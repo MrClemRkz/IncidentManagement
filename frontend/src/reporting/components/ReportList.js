@@ -81,7 +81,7 @@ class ReportList extends Component {
     this.state = {
       template_type: "daily_summary",
       reportDate: moment().format("YYYY-MM-DD"),
-      center: "ec-hq",
+      centre: "ec-hq",
       start_date: moment()
         .subtract(1, "d")
         .format("YYYY-MM-DDT16:00"),
@@ -99,8 +99,8 @@ class ReportList extends Component {
     { name: "Daily Summary Report", template: "daily_summary" },
     { name: "Categorywise Daily Summary Report", template: "daily_category" },
     {
-      name: "District-Center-wise Daily Summary Report",
-      template: "daily_district_centers",
+      name: "District-Centre-wise Daily Summary Report",
+      template: "daily_district_centres",
     },
     {
       name: "Daily Detailed Summary Report",
@@ -119,8 +119,8 @@ class ReportList extends Component {
           this.state.template_type +
           "&report_date=" +
           this.state.reportDate +
-          "&center=" +
-          this.state.center
+          "&centre=" +
+          this.state.centre
         // this.props.history.push(`/app/reports/view?template_type=` + this.state.template_type +
         // "&start_date=" + this.state.start_date +
         // "&end_date=" + this.state.end_date +
@@ -157,7 +157,7 @@ class ReportList extends Component {
                                         >
                                             <MenuItem value="daily_summary">Summary Report</MenuItem>
                                             <MenuItem value="daily_category">Category Report</MenuItem>
-                                            <MenuItem value="daily_district_centers">District Centers Report</MenuItem>
+                                            <MenuItem value="daily_district_centres">District Centers Report</MenuItem>
                                             <MenuItem value="dialy_incident_detail_list">Detailed Report</MenuItem>
                                         </Select>
                                     </FormControl> */}
@@ -265,12 +265,12 @@ class ReportList extends Component {
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <TextField
-                    id="center"
+                    id="centre"
                     select
-                    label="Center"
+                    label="Centre"
                     className={classes.textField}
-                    value={this.state.center}
-                    onChange={(e) => this.handleChange("center", e.target.value)}
+                    value={this.state.centre}
+                    onChange={(e) => this.handleChange("centre", e.target.value)}
                     SelectProps={{
                       MenuProps: {
                         className: classes.menu,

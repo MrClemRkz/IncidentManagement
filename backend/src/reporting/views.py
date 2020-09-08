@@ -12,7 +12,7 @@ from django.conf import settings
 import urllib
 import os
 
-from .services import get_police_division_summary, get_category_summary, get_daily_district_center_data, \
+from .services import get_police_division_summary, get_category_summary, get_daily_district_centre_data, \
     get_mode_summary, get_severity_summary, get_status_summary, get_subcategory_summary, get_district_summary, \
     get_incident_date_summary, get_slip_data, get_daily_category_data, get_daily_summary_data, get_daily_district_data, \
     get_daily_incident_detail_list
@@ -37,7 +37,8 @@ class ReportingAccessView(APIView):
         template_type = request.query_params.get('template_type')
 
         report_request_data = {
-            "date": request.query_params.get('report_date')
+            "date": request.query_params.get('report_date'),
+            "centre": request.query_params.get('centre')
         }
 
         if(template_type == "simple-template"):
@@ -77,12 +78,12 @@ class ReportingAccessView(APIView):
         #     """
         #     json_dict["file"] = get_daily_district_data()
 
-        elif (template_type == "daily_district_centers"):
+        elif (template_type == "daily_district_centres"):
             """
             daily_summary_report_districtwise
-            GET parameters => /?template_type=daily_district_centers
+            GET parameters => /?template_type=daily_district_centres
             """
-            json_dict["file"] = get_daily_district_center_data(report_request_data)
+            json_dict["file"] = get_daily_district_centre_data(report_request_data)
 
         elif (template_type == "dialy_incident_detail_list"):
             """

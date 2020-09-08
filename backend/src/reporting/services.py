@@ -219,6 +219,9 @@ def get_daily_summary_data(report_request_data):
     file_dict["date"] = report_date.strftime("%Y/%m/%d")
     file_dict["dateInfo"] = (report_date - timedelta(days=1)).strftime("%Y/%m/%d") + " 4:00pm - " + report_date.strftime("%Y/%m/%d") + " 4:00pm"
 
+    centre = report_request_data["centre"]
+    file_dict["centre"] = centre
+
     # preload categories
     cat_voilence = Category.objects.all().filter(top_category='Violence')
     cat_law = Category.objects.all().filter(top_category='Violation of election law')
@@ -234,7 +237,11 @@ def get_daily_summary_data(report_request_data):
     # find eclk complaints
     eclk_users = User.objects.filter(profile__organization__code="eclk")
     eclk_hq_users = eclk_users.filter(profile__division__is_hq=True)
-    eclk_district_users = eclk_users.filter(profile__division__is_hq=False)
+    # if centre name is given other than HQ, need to use those centre's users only
+    if Division.objects.get(code=centre).is_hq == True:
+        eclk_district_users = eclk_users.filter(profile__division__is_hq=False)
+    else:
+        eclk_district_users = eclk_users.filter(profile__division__code=centre)
 
     # filter incidents by created
     eclk_incidents = incidents.filter(created_by__in=eclk_users)
@@ -283,8 +290,8 @@ def filter_incidents_by_division(incidents: Incident, division: Division):
     incidents_filtered = incidents.filter(q_objects)
     return incidents_filtered
 
-def get_daily_district_center_data(report_request_data):
-    """ function to get dialy incident data for district center report generation """
+def get_daily_district_centre_data(report_request_data):
+    """ function to get dialy incident data for district centre report generation """
     file_dict = {}
 
     file_dict["template"] = "incidents/complaints/daily_summary_report_districtwise.js"
@@ -305,7 +312,7 @@ def get_daily_district_center_data(report_request_data):
 
     incidents = get_daily_incidents(IncidentType.COMPLAINT, report_date)
 
-    districts_centers = []
+    districts_centres = []
     districts = [
         "Colombo",
         "Gampaha",
@@ -338,7 +345,7 @@ def get_daily_district_center_data(report_request_data):
         district = {}
 
         try:
-            center = Division.objects.get(Q(name__contains=dt) & Q(organization_id=1))
+            centre = Division.objects.get(Q(name__contains=dt) & Q(organization_id=1))
         except ObjectDoesNotExist:
             district["name"] = dt
             district["total"] = 0
@@ -348,10 +355,10 @@ def get_daily_district_center_data(report_request_data):
             district["minor"] = 0
             district["general"] = 0
             district["major"] = 0
-            districts_centers.append(district)
+            districts_centres.append(district)
             continue
 
-        dc_incidents = filter_incidents_by_division(incidents, center)
+        dc_incidents = filter_incidents_by_division(incidents, centre)
         if (not dc_incidents):
             district["name"] = dt
             district["total"] = 0
@@ -361,7 +368,7 @@ def get_daily_district_center_data(report_request_data):
             district["minor"] = 0
             district["general"] = 0
             district["major"] = 0
-            districts_centers.append(district)
+            districts_centres.append(district)
             continue
 
         district["name"] = dt
@@ -389,9 +396,9 @@ def get_daily_district_center_data(report_request_data):
         general += severity_counts["general"]
         major += severity_counts["major"]
 
-        districts_centers.append(district)
+        districts_centres.append(district)
 
-    file_dict["complaintByDistrict"] = districts_centers
+    file_dict["complaintByDistrict"] = districts_centres
 
     file_dict["complaintTotalsByType"] = {
         "violence": violence,
